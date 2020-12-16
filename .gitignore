@@ -1,0 +1,10 @@
+venv/
+.idea/
+__pycache__/
+*.pyc
+
+.env
+logs/
+bot.db
+poetry.lock
+
