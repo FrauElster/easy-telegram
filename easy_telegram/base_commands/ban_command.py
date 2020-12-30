@@ -26,7 +26,7 @@ def ban_command(update: Update, context: CallbackContext):
         return
 
     user_to_ban.blocked = True
-    session.commit()
+    session.commit()  # pylint: disable=E1101
     if user_to_ban.chat_id:
         context.bot.send_message(user_to_ban.chat_id, get_msg(ban_notification))
     context.bot.send_message(chat_id, get_msg(banned_msg, {"user": username}))

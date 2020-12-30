@@ -10,17 +10,17 @@ from easy_telegram.util.SessionHandler import SessionHandler
 
 
 def unpermit_command(update: Update, context: CallbackContext):
-    msg: Message = update.message
+    msg: Message = update.message  # type: ignore
     chat_id: int = msg.chat_id
 
-    user_to_perm_name, permission_name = get_msg_content(msg.text)
+    user_to_perm_name, permission_name = get_msg_content(msg.text)  # type: ignore
     if not Permission.exists(name=permission_name):
         # unknown permission
         context.bot.send_message(chat_id, get_msg(unknown_permission_msg, {"permission": permission_name}))
         return
 
     session = SessionHandler().session
-    perm: Permission = session.query(Permission).filter_by(name=permission_name)
+    perm: Permission = session.query(Permission).filter_by(name=permission_name)  # pylint: disable=E1101
     user_to_unperm: User = User.get_or_create(session=session, name=user_to_perm_name)
     if user_to_unperm.permissions is None:
         user_to_unperm.permissions = []
@@ -31,7 +31,7 @@ def unpermit_command(update: Update, context: CallbackContext):
         return
 
     user_to_unperm.permissions.remove(perm)
-    session.commit()
+    session.commit()  # pylint: disable=E1101
 
     if user_to_unperm.chat_id is not None:
         context.bot.send_message(user_to_unperm.chat_id,

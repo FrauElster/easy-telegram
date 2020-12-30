@@ -1,4 +1,4 @@
-from typing import List, Union, Set, Optional
+from typing import List, Union, Set, Optional, Iterable
 
 from sqlalchemy import Column, String, Boolean
 from sqlalchemy.orm import relationship, Session
@@ -9,7 +9,7 @@ from .Command import Command
 from .Event import Event
 from .Permission import Permission
 from .user_permissions import user_permissions
-from ..util.LoggerFactory import get_logger
+from ..util.utils import get_logger
 from ..util.SessionHandler import SessionHandler
 from ..util.State import State
 
@@ -21,7 +21,7 @@ class User(Base):
     blocked = Column(Boolean, nullable=False, default=False)
     whitelisted = Column(Boolean, nullable=False, default=False)
     chat_id = Column(String)
-    permissions = relationship("Permission", secondary=user_permissions)
+    permissions: Iterable[Permission] = relationship("Permission", secondary=user_permissions)
 
     @classmethod
     def get_or_create(cls, session: Optional[Session] = None, defaults=None, **kwargs):
@@ -31,22 +31,20 @@ class User(Base):
         if instance:
             cls._logger.debug("Found instance of %s in db", cls.__name__)
             return instance
-        else:
-            params = {k: v for k, v in kwargs.items() if not isinstance(v, ClauseElement)}
-            params.update(defaults or {})
-            instance = cls(**params)
-            session.add(instance)
-            session.commit()
-            cls._logger.debug("Created new instance of %s in db", cls.__name__)
-            return instance
+        params = {k: v for k, v in kwargs.items() if not isinstance(v, ClauseElement)}
+        params.update(defaults or {})
+        instance = cls(**params)  # type: ignore
+        session.add(instance)
+        session.commit()
+        cls._logger.debug("Created new instance of %s in db", cls.__name__)
+        return instance
 
     def is_permitted(self, event_or_command: Union[Event, Command]) -> bool:
         assert isinstance(event_or_command, (Event, Command)), "has to be either of type 'Event' or 'Command'"
 
         if isinstance(event_or_command, Command):
             return self._is_permitted_command(event_or_command)
-        else:
-            return self._is_permitted_event(event_or_command)
+        return self._is_permitted_event(event_or_command)
 
     def _is_permitted_command(self, command: Command) -> bool:
         if not command.permissions:
@@ -85,13 +83,13 @@ class User(Base):
     @property
     def commands(self) -> List[Command]:
         all_: Set[Command] = State().commands
-        return list(filter(lambda command: self.is_permitted(command), all_))
+        return list(filter(self.is_permitted, all_))
 
     @property
     def events(self) -> List[Event]:
         session = SessionHandler().session
-        all_ = session.query(Event).all()
-        return list(filter(lambda event: self.is_permitted(event), all_))
+        all_ = session.query(Event).all()  # pylint: disable=E1101
+        return list(filter(self.is_permitted, all_))
 
     @property
     def subscribed_events(self) -> List[Event]:
@@ -113,5 +111,5 @@ class User(Base):
     @classmethod
     def exists(cls, **kwargs) -> bool:
         session = SessionHandler().session
-        instance = session.query(cls).filter_by(**kwargs).first()
+        instance = session.query(cls).filter_by(**kwargs).first()  # pylint: disable=E1101
         return instance is not None

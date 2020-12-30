@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 
 from telegram import Update, Message
 from telegram.ext import CallbackContext
@@ -6,7 +6,6 @@ from telegram.ext import CallbackContext
 from assests.messages import get_msg, unknown_command_msg, command_suggestion_msg, fact_msg
 from easy_telegram.models.Command import Command
 from easy_telegram.models.User import User
-from easy_telegram.util.SessionHandler import SessionHandler
 from easy_telegram.util.random_fact import random_fact
 from easy_telegram.util.utils import levenshtein
 

@@ -4,4 +4,4 @@ from .singleton import singleton
 class State:
     __metaclass__ = singleton
 
-    commands = set()
+    commands = set()  # type: ignore

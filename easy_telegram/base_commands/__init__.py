@@ -6,18 +6,18 @@ from assests.messages import help_command_description, start_command_description
 
 
 def setup_base_commands():
-    from easy_telegram.models.Command import Command
-    from easy_telegram.base_commands.ban_command import ban_command
-    from easy_telegram.base_commands.commands_command import commands_command
-    from easy_telegram.base_commands.event_subscribe_commands import event_subscribe_command
-    from easy_telegram.base_commands.event_unsubscribe_command import event_unsubscribe_command
-    from easy_telegram.base_commands.permit_command import permit_command
-    from easy_telegram.base_commands.start_command import start_command
-    from easy_telegram.base_commands.subscribe_command import subscribe_command
-    from easy_telegram.base_commands.unban_command import unban_command
-    from easy_telegram.base_commands.unpermit_command import unpermit_command
-    from easy_telegram.base_commands.unsubscribe_command import unsubscribe_command
-    from easy_telegram.models.Permission import Permission
+    from easy_telegram.models.Command import Command  # pylint: disable=C0415
+    from easy_telegram.base_commands.ban_command import ban_command  # pylint: disable=C0415
+    from easy_telegram.base_commands.commands_command import commands_command  # pylint: disable=C0415
+    from easy_telegram.base_commands.event_subscribe_commands import event_subscribe_command  # pylint: disable=C0415
+    from easy_telegram.base_commands.event_unsubscribe_command import event_unsubscribe_command  # pylint: disable=C0415
+    from easy_telegram.base_commands.permit_command import permit_command  # pylint: disable=C0415
+    from easy_telegram.base_commands.start_command import start_command  # pylint: disable=C0415
+    from easy_telegram.base_commands.subscribe_command import subscribe_command  # pylint: disable=C0415
+    from easy_telegram.base_commands.unban_command import unban_command  # pylint: disable=C0415
+    from easy_telegram.base_commands.unpermit_command import unpermit_command  # pylint: disable=C0415
+    from easy_telegram.base_commands.unsubscribe_command import unsubscribe_command  # pylint: disable=C0415
+    from easy_telegram.models.Permission import Permission  # pylint: disable=C0415
 
     admin_permission = Permission.get_or_create(name="admin")
 

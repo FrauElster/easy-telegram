@@ -20,7 +20,7 @@ def permit_command(update: Update, context: CallbackContext):
         return
 
     session = SessionHandler().session
-    perm: Permission = session.query(Permission).filter_by(name=permission_name)
+    perm: Permission = session.query(Permission).filter_by(name=permission_name)  # pylint: disable=E1101
     user_to_perm: User = User.get_or_create(session=session, name=user_to_perm_name)
     if user_to_perm.permissions is None:
         user_to_perm.permissions = []
@@ -31,7 +31,7 @@ def permit_command(update: Update, context: CallbackContext):
         return
 
     user_to_perm.permissions.append(perm)
-    session.commit()
+    session.commit()  # pylint: disable=E1101
 
     if user_to_perm.chat_id is not None:
         context.bot.send_message(user_to_perm.chat_id,

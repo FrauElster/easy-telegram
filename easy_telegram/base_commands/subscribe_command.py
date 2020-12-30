@@ -7,23 +7,21 @@ from easy_telegram.base_commands.common import get_msg_content
 from easy_telegram.models.Event import Event
 from easy_telegram.models.User import User
 from easy_telegram.util.SessionHandler import SessionHandler
-from easy_telegram.util.StoppableThread import logger
 
 
 def subscribe_command(update: Update, context: CallbackContext):
-    msg: Message = update.message
+    msg: Message = update.message  # type: ignore
     chat_id: int = msg.chat_id
-    username: str = msg.from_user.username
+    username: str = msg.from_user.username  # type: ignore
 
-    event_name: str = get_msg_content(msg.text)[0]
+    event_name: str = get_msg_content(msg.text)[0]  # type: ignore
     if not Event.exists(name=event_name):
         # unknown event
-        logger.info("user %s tried to subscribe to unknown event %s", username, event_name)
         context.bot.send_message(chat_id, get_msg(unknown_event_msg))
         return
 
     session = SessionHandler().session
-    event: Event = session.query(Event).filter_by(name=event_name).first()
+    event: Event = session.query(Event).filter_by(name=event_name).first()  # pylint: disable=E1101
     user = User.get_or_create(session=session, name=username)
 
     if event in user.subscribed_events:
@@ -39,6 +37,6 @@ def subscribe_command(update: Update, context: CallbackContext):
     if event.subscribers is None:
         event.subscribers = []
     event.subscribers.append(user)
-    session.commit()
+    session.commit()  # pylint: disable=E1101
 
     context.bot.send_message(chat_id, get_msg(event_subscription_msg, {"event": event_name}))

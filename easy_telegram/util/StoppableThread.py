@@ -31,9 +31,9 @@ class StoppableThread(Thread):
                 self._return = self._target(*self._args, **self._kwargs)
             except StoppableThread.StopSignal:
                 logger.debug("Stopped thread '%s'", self.name)
-            except Exception as e:
-                logger.exception("'%s' occurred in thread %s: %s", e.__class__.__name__, self.name, e)
-                raise e
+            except Exception as err:
+                logger.exception("'%s' occurred in thread %s: %s", err.__class__.__name__, self.name, err)
+                raise err
 
     def get_id(self) -> int:
         """

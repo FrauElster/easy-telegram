@@ -4,9 +4,9 @@ from typing import Callable, Optional
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
-from assests.messages import get_msg, command_400
+from assests.messages import get_msg, command_400  # type: ignore
 from easy_telegram.base_commands.common import get_msg_content
-from easy_telegram.util.LoggerFactory import get_logger
+from easy_telegram.util.utils import get_logger
 
 
 class arg_check:
@@ -22,10 +22,9 @@ class arg_check:
     def __call__(self, func: Callable[[Update, CallbackContext], None]) -> Callable[[Update, CallbackContext], None]:
         @wraps(func)
         def wrapper(update: Update, context: CallbackContext):
-            msg: Message = update.message
-            username: str = msg.from_user.username
+            msg: Message = update.message  # type: ignore
 
-            if len(get_msg_content(msg.text)) != self._arg_amount:
+            if len(get_msg_content(msg.text)) != self._arg_amount:  # type: ignore
                 # command needs more / fewer args
                 context.bot.send_message(msg.chat_id, get_msg(command_400))
                 if self._help_text:

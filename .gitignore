@@ -2,9 +2,10 @@ venv/
 .idea/
 __pycache__/
 *.pyc
+.mypy_cache/
 
 .env
 logs/
-bot.db
+*.db
 poetry.lock
 

@@ -4,7 +4,7 @@ from .bot.bot import TelegramBot
 
 
 def main():
-    bot = TelegramBot()
+    TelegramBot()
 
     try:
         while True:

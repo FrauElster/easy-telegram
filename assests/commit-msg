@@ -114,6 +114,7 @@ def main():
         lint()
     except LintError as e:
         logger.warning(f"Failed linting: {e}")
+        exit(0)
 
 
 if __name__ == '__main__':

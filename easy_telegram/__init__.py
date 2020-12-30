@@ -3,13 +3,11 @@ import os
 import pathlib
 import sys
 
-from dotenv import load_dotenv
-
 
 def _check_version():
     if not (sys.version_info[0] >= 3 and sys.version_info[1] >= 7):
         raise Exception(
-            "Must be using Python 3.7 or newer, currently running {sys.version_info[0]}.{sys.version_info[1]}")
+            f"Must be using Python 3.7 or newer, currently running {sys.version_info[0]}.{sys.version_info[1]}")
     print(f"Running with env: {sys.prefix} and python version: {sys.version_info[0]}.{sys.version_info[1]}")
 
 
@@ -29,7 +27,15 @@ def _check_requirements():
 
     if error:
         print("\n".join(error))
-        exit(-1)
+        exit(-1)  # pylint: disable=R1722
+
+
+def _load_env():
+    if not os.path.isfile(_env_file):
+        print(f".env file not found ('{_env_file}')")
+        sys.exit(-1)
+    from dotenv import load_dotenv  # pylint: disable=C0415
+    load_dotenv(dotenv_path=_env_file, verbose=True)
 
 
 def _logger_setup():
@@ -38,18 +44,17 @@ def _logger_setup():
 
 
 def _setup_db():
-    from .util.SessionHandler import SessionHandler
-    atexit.register(SessionHandler().session.commit)
+    from .util.SessionHandler import SessionHandler  # pylint: disable=C0415
+    atexit.register(SessionHandler().session.commit)  # pylint: disable=E1101
     if os.path.isfile(_db_file):
         return
-    from .util.utils import get_env
-    from .models import Base, engine
-    from .models.Permission import Permission
-    from .models.User import User
-    from .models.Event import Event
-    from .models.event_subscriber import event_subscriber
-    from .models.event_permissions import event_permissions
-    from .models.user_permissions import user_permissions
+    from .models import Base, engine  # pylint: disable=C0415
+    from .models.Permission import Permission  # pylint: disable=C0415
+    from .models.User import User  # pylint: disable=C0415
+    from .models.Event import Event  # noqa: F401  # pylint: disable=C0415,W0611
+    from .models.event_subscriber import event_subscriber  # noqa: F401  # pylint: disable=C0415,W0611
+    from .models.event_permissions import event_permissions  # noqa: F401  # pylint: disable=C0415,W0611
+    from .models.user_permissions import user_permissions  # noqa: F401  # pylint: disable=C0415,W0611
 
     Base.metadata.create_all(engine)
 
@@ -57,14 +62,16 @@ def _setup_db():
     admin_perm = Permission.get_or_create(session, name="admin")
     admin_names = get_env("TELEGRAM_ADMIN", type_=str, default="").split(" ")
     for admin_name in admin_names:
-        session.add(User(name=admin_name, permissions=[admin_perm], whitelisted=True))
-    session.commit()
+        session.add(User(name=admin_name, permissions=[admin_perm], whitelisted=True))  # pylint: disable=E1101
+    session.commit()  # pylint: disable=E1101
 
 
-_check_requirements()
+from .util.utils import get_env  # pylint: disable=C0415,C0413
+
+if get_env("TELEGRAM_DEBUG", type_=bool, default=False):
+    _load_env()
 _logger_setup()
-load_dotenv(dotenv_path=_env_file, verbose=True)
 _setup_db()
-from easy_telegram.base_commands import setup_base_commands
+from easy_telegram.base_commands import setup_base_commands  # noqa: E402  # pylint: disable=C0413,C0411
 
 setup_base_commands()

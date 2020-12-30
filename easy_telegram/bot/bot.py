@@ -9,8 +9,7 @@ from easy_telegram.bot.arg_check import arg_check
 from easy_telegram.bot.send_action import send_action
 from easy_telegram.bot.username_check import username_check
 from easy_telegram.models.Command import Command
-from easy_telegram.util.LoggerFactory import get_logger
-from easy_telegram.util.SessionHandler import SessionHandler
+from easy_telegram.util.utils import get_logger
 from easy_telegram.util.State import State
 from easy_telegram.util.StoppableThread import StoppableThread
 from easy_telegram.util.utils import get_env
@@ -70,7 +69,7 @@ class TelegramBot:
         command_callback = username_check(command_callback)
         command_callback = send_action(ChatAction.TYPING)(command_callback)
 
-        return command_callback
+        return command_callback  # type: ignore
 
     def _start_background_thread(self):
         self._background_thread = StoppableThread(target=self._updater.start_polling,

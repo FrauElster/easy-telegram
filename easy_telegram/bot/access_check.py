@@ -7,7 +7,7 @@ from telegram.ext import CallbackContext
 from assests.messages import ban_msg, not_permitted_msg
 from easy_telegram.bot.BotMode import get_mode, BotMode
 from easy_telegram.models.User import User
-from easy_telegram.util.LoggerFactory import get_logger
+from easy_telegram.util.utils import get_logger
 
 
 class access_check:

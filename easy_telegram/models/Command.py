@@ -3,7 +3,7 @@ from typing import Callable, Optional, List
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from ..util.LoggerFactory import get_logger
+from ..util.utils import get_logger
 from ..util.State import State
 
 
@@ -12,7 +12,7 @@ class Command:
 
     name: str
     description: str
-    help_usage: str
+    help_usage: Optional[str]
     args_number: int
     permissions: List[str]
     callback: Callable[[Update, CallbackContext], None]
@@ -20,14 +20,14 @@ class Command:
     def __init__(self, name: str, description: str, callback: Callable[[Update, CallbackContext], None],
                  help_usage: Optional[str] = None, permissions: List[str] = None, args_number: int = 0):
         if permissions is None:
-            permissions = set()
+            permissions = []
 
         self.name = name
         self.description = description
         self.help_usage = help_usage
         self.args_number = args_number
-        self.callback = callback
-        self.permissions = permissions
+        self.callback = callback  # type: ignore
+        self.permissions = permissions  # type: ignore
 
         State().commands.add(self)
 
@@ -35,7 +35,7 @@ class Command:
     def exists(cls, **kwargs) -> bool:
         for command in State().commands:
             err = False
-            for k, v in kwargs:
+            for k, v in kwargs.items():
                 if command[k] != v:
                     err = True
                     break
