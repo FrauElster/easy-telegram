@@ -12,7 +12,7 @@ class Base:
 
 from sqlalchemy import create_engine  # noqa: E402 # pylint: disable=C0413
 from sqlalchemy.ext.declarative import declarative_base  # noqa: E402 # pylint: disable=C0413
-from .. import _db_file  # noqa: E402 # pylint: disable=C0413
+from .. import DB_FILE  # noqa: E402 # pylint: disable=C0413
 
 Base = declarative_base(cls=Base)  # type: ignore
-engine = create_engine(f'sqlite:///{_db_file}')
+engine = create_engine(f'sqlite:///{DB_FILE}')

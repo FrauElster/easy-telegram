@@ -1,7 +1,7 @@
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
-from easy_telegram.base_commands.messages import NO_EVENTS_TO_SUBSCRIBE_MSG, EVENTS_TO_UNSUBSCRIBE_MSG
+from easy_telegram.base_commands.messages import NO_EVENTS_TO_SUBSCRIBE_MSG, EVENTS_TO_UNSUBSCRIBE_MSG, get_msg
 from easy_telegram.models.User import User
 
 
@@ -11,10 +11,12 @@ def event_subscribe_command(update: Update, context: CallbackContext):
     username: str = msg.from_user.username
 
     user = User.get_or_create(name=username)
-    if not user.subscribed_events:
+    not_subed = [item for item in user.events if item not in user.subscribed_events]
+    if not not_subed:
         context.bot.send_message(chat_id, NO_EVENTS_TO_SUBSCRIBE_MSG)
         return
 
-    context.bot.send_message(chat_id, EVENTS_TO_UNSUBSCRIBE_MSG)
-    for event in user.subscribed_events:
-        context.bot.send_message(chat_id, event.name)
+    event_str = ""
+    for event in not_subed:
+        event_str += f"\n\t{event.name}"
+    context.bot.send_message(chat_id, get_msg(EVENTS_TO_UNSUBSCRIBE_MSG, {"events": event_str}))

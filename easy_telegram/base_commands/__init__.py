@@ -1,3 +1,4 @@
+from easy_telegram.base_commands.help_command import help_command
 from easy_telegram.base_commands.messages import HELP_COMMAND_DESCRIPTION, START_COMMAND_DESCRIPTION, PERMIT_COMMAND_DESCRIPTION, \
     UNPERMIT_COMMAND_DESCRIPTION, BAN_COMMAND_DESCRIPTION, UNBAN_COMMAND_DESCRIPTION, SUBSCRIBE_COMMAND_DESCRIPTION, \
     UNSUBSCRIBE_COMMAND_DESCRIPTION, EVENTS_COMMAND_DESCRIPTION, MY_EVENTS_COMMAND_DESCRIPTION, \
@@ -22,7 +23,7 @@ def setup_base_commands():
     admin_permission = Permission.get_or_create(name="admin")
 
     Command(name="start", description=START_COMMAND_DESCRIPTION, callback=start_command)
-    Command(name="help", description=HELP_COMMAND_DESCRIPTION, callback=commands_command)
+    Command(name="help", description=HELP_COMMAND_DESCRIPTION, callback=help_command)
     Command(name="sub", description=SUBSCRIBE_COMMAND_DESCRIPTION, help_usage=SUBSCRIBE_COMMAND_HELP,
             callback=subscribe_command, args_number=1)
     Command(name="unsub", description=UNSUBSCRIBE_COMMAND_DESCRIPTION,

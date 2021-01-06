@@ -14,19 +14,6 @@ def get_env(env_var: str, type_: type = str, default=None):
         raise ValueError(f'"{env_var}" has to be of type "{type_}". Failed to convert: {err}') from err
 
 
-def get_logger(name: str, loglevel=logging.INFO) -> logging.Logger:
-    logger = logging.getLogger(name)
-    formatter = logging.Formatter('%(levelname)s \t|%(asctime)s \t| %(name)s \t|  %(message)s')
-
-    console_handler: logging.StreamHandler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    console_handler.setLevel(loglevel)
-
-    logger.setLevel(loglevel)
-    logger.addHandler(console_handler)
-    return logger
-
-
 def levenshtein(word_one: str, word_two: str) -> int:
     """
     Calculates the levenshtein distance of the given strings

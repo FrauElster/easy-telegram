@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import List, Union, Set, Optional, Iterable
 
 from sqlalchemy import Column, String, Boolean
@@ -9,13 +10,12 @@ from .Command import Command
 from .Event import Event
 from .Permission import Permission
 from .user_permissions import user_permissions
-from ..util.utils import get_logger
 from ..util.SessionHandler import SessionHandler
 from ..util.State import State
 
 
 class User(Base):
-    _logger = get_logger("User")
+    _logger = getLogger("User")
 
     name = Column(String, nullable=False, unique=True)
     blocked = Column(Boolean, nullable=False, default=False)
@@ -52,7 +52,7 @@ class User(Base):
             return True
         if not self.permissions:
             # user has no permission at all
-            self._logger.info("User %s is not permitted to execute %s", self.name, command.name)
+            self._logger.debug("User %s is not permitted to execute %s", self.name, command.name)
             return False
 
         perm_names: Set[Permission] = set(map(lambda perm_: perm_.name, self.permissions))
@@ -60,7 +60,7 @@ class User(Base):
             if perm in perm_names:
                 return True
         # not permitted
-        self._logger.info("User %s is not permitted to execute %s", self.name, command.name)
+        self._logger.debug("User %s is not permitted to execute %s", self.name, command.name)
         return False
 
     def _is_permitted_event(self, event: Event) -> bool:

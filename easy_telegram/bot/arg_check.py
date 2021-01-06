@@ -1,16 +1,16 @@
 from functools import wraps
+from logging import getLogger
 from typing import Callable, Optional
 
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
-from easy_telegram.base_commands.messages import get_msg, COMMAND_400  # type: ignore
 from easy_telegram.base_commands.common import get_msg_content
-from easy_telegram.util.utils import get_logger
+from easy_telegram.base_commands.messages import get_msg, COMMAND_400  # type: ignore
 
 
 class arg_check:
-    _logger = get_logger("arg_check")
+    _logger = getLogger("arg_check")
     _arg_amount: int
     _help_text: Optional[str]
 

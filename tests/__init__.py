@@ -1,3 +1,8 @@
+from sqlalchemy.exc import InvalidRequestError
+
+from easy_telegram.models.Permission import Permission
+from easy_telegram.models.User import User
+
 TEST_DB = "test.db"
 
 
@@ -17,6 +22,11 @@ def _db_setup():
 _db_setup()
 
 from easy_telegram.bot.bot import TelegramBot
-from tests.Mock import bot_init
+from tests.Mock import bot_init, bot_send_message, bot_send_document
 
 TelegramBot.__init__ = bot_init
+
+from telegram import Bot
+
+Bot.send_message = bot_send_message
+Bot.send_document = bot_send_document

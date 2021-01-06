@@ -1,14 +1,14 @@
+from logging import getLogger
 from typing import Callable, Optional, List
 
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from ..util.utils import get_logger
 from ..util.State import State
 
 
 class Command:
-    _logger = get_logger("Command")
+    _logger = getLogger("Command")
 
     name: str
     description: str

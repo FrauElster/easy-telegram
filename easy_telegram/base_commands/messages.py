@@ -1,18 +1,16 @@
 from copy import copy
+from logging import getLogger
 
 from typing import Dict
 
 # events
-from easy_telegram.util.utils import get_logger
-
-NO_EVENT_SPECIFIED_MSG: str = "No event name specified"
 UNKNOWN_EVENT_MSG: str = "Unknown event '<event>'"
 EVENT_DISPOSAL_MSG: str = "<event> got removed by server."
 EVENT_TRIGGERED_MSG: str = "<event> triggered"
 NO_EVENTS_TO_SUBSCRIBE_MSG: str = "No events to subscribe to :("
 NO_EVENTS_TO_UNSUBSCRIBE_MSG: str = "No events to unsubscribe from :("
-EVENTS_TO_SUBSCRIBE_MSG: str = "Events to subscribe to:"
-EVENTS_TO_UNSUBSCRIBE_MSG: str = "Events to unsubscribe from:"
+EVENTS_TO_SUBSCRIBE_MSG: str = "Events to subscribe to:<events>"
+EVENTS_TO_UNSUBSCRIBE_MSG: str = "Events to unsubscribe from:<events>"
 EVENT_SUBSCRIPTION_MSG: str = "You successfully subscribed to <event>"
 EVENT_UNSUBSCRIPTION_MSG: str = "You successfully unsubscribed from <event>"
 ALREADY_SUBSCRIBED_MSG: str = "You already subscribed <event>"
@@ -20,7 +18,7 @@ ALREADY_UNSUBSCRIBED_MSG: str = "You never subscribed <event>"
 
 # commands
 NO_COMMANDS_MSG: str = "no commands for you :("
-COMMANDS_MSG: str = "You can execute the following commands:"
+COMMANDS_MSG: str = "You can execute the following commands:<commands>"
 UNKNOWN_COMMAND_MSG: str = "I do not know the command \"<command>\"..."
 COMMAND_SUGGESTION_MSG: str = "Did you mean <command>?"
 COMMAND_400: str = "The command does not work like that."
@@ -95,7 +93,7 @@ BAN_COMMAND_HELP = "Type \"/ban <username>\" and replace the username by any nam
 UNBAN_COMMAND_DESCRIPTION: str = "Lets you unban a user so he can interact with the bot again"
 UNBAN_COMMAND_HELP = "Type \"/unban <username>\" and replace the username by any name. The user will be notified if he ever chatted with the bot"
 
-_logger = get_logger("MESSAGES")
+_logger = getLogger("Telegram:Messages")
 
 
 def get_msg(message: str, placeholder: Dict[str, str] = None) -> str:

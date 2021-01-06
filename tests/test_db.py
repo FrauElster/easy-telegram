@@ -11,7 +11,7 @@ class TestDb:
         bot = TelegramBot()
         user = MockUser()
         username = user.username
-        msg = MockMessage(from_user=user)
+        msg = MockMessage(from_user=user, text="any")
         update = MockUpdate(message=msg)
 
         with pytest.raises(BotSend):

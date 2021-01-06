@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "easy_telegram"
-version = "0.1.1"
+version = "0.1.3"
 description = "An easy to setup telegram bot lib"
 homepage = "https://github.com/FrauElster/easy-telegram"
 authors = ["Moritz Richter <moritz.richter@ymail.com>"]

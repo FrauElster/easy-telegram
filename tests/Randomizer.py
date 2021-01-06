@@ -3,13 +3,11 @@ import string
 from datetime import datetime
 from functools import wraps
 from ipaddress import IPv6Address, IPv4Address
-from logging import Logger
+from logging import Logger, getLogger
 from random import randint, uniform, choices, random, getrandbits
 from typing import Callable, Optional, List, Any, Dict
 
 import names
-
-from easy_telegram.util.utils import get_logger
 
 
 def _unique(func: Callable[[Optional[List[Any]], Optional[Dict[Any, Any]]], Any]):
@@ -42,7 +40,7 @@ class Randomizer:
     _logger: Logger
 
     def __init__(self):
-        self._logger = get_logger(str(type(self)))
+        self._logger = getLogger(str(type(self)))
         self._uniques = collections.defaultdict(list)
 
     @_unique

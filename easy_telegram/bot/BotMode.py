@@ -6,9 +6,4 @@ class BotMode(Enum):
     BLACKLIST = "blacklist"
 
 
-def get_mode():
-    from easy_telegram.util.utils import get_env # pylint: disable=C0415
-
-    if len(get_env("TELEGRAM_WHITELIST", type_=str, default="")) > 0:
-        return BotMode.WHITELIST
-    return BotMode.BLACKLIST
+MODE = BotMode.WHITELIST

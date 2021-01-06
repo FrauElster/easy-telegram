@@ -1,21 +1,24 @@
 from functools import wraps
+from logging import getLogger
 from typing import Callable, Set, List
 
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
 from easy_telegram.base_commands.messages import BAN_MSG, NOT_PERMITTED_MESSAGE
-from easy_telegram.bot.BotMode import get_mode, BotMode
+import easy_telegram.bot.BotMode as BotMode
 from easy_telegram.models.User import User
-from easy_telegram.util.utils import get_logger
 
 
 class access_check:
-    _logger = get_logger("access_check")
+    _logger = getLogger("access_check")
     _permissions: Set[str]
 
-    def __init__(self, permissions: List[str]):
-        self._permissions = permissions
+    def __init__(self, permissions: List[str] = None):
+        if permissions is not None:
+            self._permissions = permissions
+        else:
+            self._permissions = []
 
     def __call__(self, func: Callable[[Update, CallbackContext], None]) -> Callable[[Update, CallbackContext], None]:
         @wraps(func)
@@ -35,7 +38,7 @@ class access_check:
                 context.bot.send_message(chat_id=msg.chat_id, text=BAN_MSG)
                 return
 
-            if get_mode() == BotMode.WHITELIST and not user.whitelisted:
+            if BotMode.MODE == BotMode.BotMode.WHITELIST and not user.whitelisted:
                 # user is not whitelisted
                 self._logger.info("Non whitelisted user %s tried to send msg: '%s'", user.name, msg.text)
                 context.bot.send_message(chat_id=msg.chat_id,
@@ -52,7 +55,7 @@ class access_check:
                     return func(update, context)
             # user is not permitted
             self._logger.info("user %s has none of the required permissions ('%s') to send msg: '%s'", user.name,
-                              ", ".join(self._permissions), msg.text)
+                              ", ".join(map(lambda perm: perm.name, self._permissions)), msg.text)
             context.bot.send_message(chat_id=msg.chat_id,
                                      text=NOT_PERMITTED_MESSAGE)
             return

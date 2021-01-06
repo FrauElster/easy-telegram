@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Optional
 
 from sqlalchemy import Column, String
@@ -5,12 +6,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import ClauseElement
 
 from . import Base
-from ..util.utils import get_logger
 from ..util.SessionHandler import SessionHandler
 
 
 class Permission(Base):
-    _logger = get_logger("Permission")
+    _logger = getLogger("Permission")
 
     name = Column(String, nullable=False, unique=True)
 

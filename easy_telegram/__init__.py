@@ -1,7 +1,10 @@
 import atexit
+import logging
 import os
 import pathlib
 import sys
+
+PROJECT_ROOT = pathlib.Path(__file__).parent.parent.absolute()
 
 
 def _check_version():
@@ -11,26 +14,8 @@ def _check_version():
     print(f"Running with env: {sys.prefix} and python version: {sys.version_info[0]}.{sys.version_info[1]}")
 
 
-_check_version()
-
-PROJECT_ROOT = pathlib.Path(__file__).parent.parent.absolute()
-SOURCE_ROOT = pathlib.Path(__file__).parent.absolute()
-LOG_DIR = os.path.join(PROJECT_ROOT, "logs")
-_db_file = os.path.join(PROJECT_ROOT, "easy-telegram.db")
-_env_file = os.path.join(PROJECT_ROOT, ".env")
-
-
-def _check_requirements():
-    error = []
-    if not os.path.isfile(_env_file):
-        error.append(f".env file not found ('{_env_file}')")
-
-    if error:
-        print("\n".join(error))
-        exit(-1)  # pylint: disable=R1722
-
-
 def _load_env():
+    _env_file = os.path.join(PROJECT_ROOT, ".env")
     if not os.path.isfile(_env_file):
         print(f".env file not found ('{_env_file}')")
         sys.exit(-1)
@@ -38,15 +23,40 @@ def _load_env():
     load_dotenv(dotenv_path=_env_file, verbose=True)
 
 
+_check_version()
+from .util.utils import get_env  # pylint: disable=C0415,C0413
+
+if get_env("TELEGRAM_DEBUG", type_=bool, default=False):
+    _load_env()
+
+DB_FILE = get_env('TELEGRAM_DB_FILE', type_=str, default=os.path.join(PROJECT_ROOT, "easy-telegram.db"))
+
+
 def _logger_setup():
+    LOG_DIR = get_env('TELEGRAM_LOG_DIR', type_=str, default=os.path.join(PROJECT_ROOT, "logs"))
     if not os.path.isdir(LOG_DIR):
         os.mkdir(LOG_DIR)
+
+    rootLogger = logging.getLogger()
+    if get_env("TELEGRAM_DEBUG", type_=bool, default=False):
+        rootLogger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(levelname)s \t|%(asctime)s \t| %(name)s \t|  %(message)s')
+
+    console_handler: logging.StreamHandler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+
+    file_handler = logging.FileHandler(os.path.join(LOG_DIR, f"telegram.{rootLogger.level}.log"))
+    file_handler.setFormatter(formatter)
+
+    rootLogger.addHandler(console_handler)
+    rootLogger.addHandler(file_handler)
+
 
 
 def _setup_db():
     from .util.SessionHandler import SessionHandler  # pylint: disable=C0415
     atexit.register(SessionHandler().session.commit)  # pylint: disable=E1101
-    if os.path.isfile(_db_file):
+    if os.path.isfile(DB_FILE):
         return
     from .models import Base, engine  # pylint: disable=C0415
     from .models.Permission import Permission  # pylint: disable=C0415
@@ -58,18 +68,7 @@ def _setup_db():
 
     Base.metadata.create_all(engine)
 
-    session = SessionHandler().session
-    admin_perm = Permission.get_or_create(session, name="admin")
-    admin_names = get_env("TELEGRAM_ADMIN", type_=str, default="").split(" ")
-    for admin_name in admin_names:
-        session.add(User(name=admin_name, permissions=[admin_perm], whitelisted=True))  # pylint: disable=E1101
-    session.commit()  # pylint: disable=E1101
 
-
-from .util.utils import get_env  # pylint: disable=C0415,C0413
-
-if get_env("TELEGRAM_DEBUG", type_=bool, default=False):
-    _load_env()
 _logger_setup()
 _setup_db()
 from easy_telegram.base_commands import setup_base_commands  # noqa: E402  # pylint: disable=C0413,C0411

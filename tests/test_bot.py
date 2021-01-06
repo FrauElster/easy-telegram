@@ -10,7 +10,7 @@ class TestBot:
     def test_no_username(self):
         bot = TelegramBot()
         user = MockUser(username=None)
-        msg = MockMessage(from_user=user)
+        msg = MockMessage(from_user=user, text="any")
         update = MockUpdate(message=msg)
 
         with pytest.raises(BotSend) as e_info:
@@ -21,7 +21,7 @@ class TestBot:
     def test_no_whitelist(self):
         bot = TelegramBot()
         user = MockUser(username="hello_world")
-        msg = MockMessage(from_user=user)
+        msg = MockMessage(from_user=user, text="any")
         update = MockUpdate(message=msg)
 
         with pytest.raises(BotSend) as e_info:

@@ -1,22 +1,26 @@
-from typing import Optional, Callable
+from logging import getLogger
+from typing import Optional, Callable, List
 
 from telegram import ChatAction, Update
 from telegram.ext import Updater, Dispatcher, MessageHandler, CommandHandler, Filters, CallbackContext
 
 from easy_telegram.base_commands.unknown_message import unknown_message
+import easy_telegram.bot.BotMode as BotMode
 from easy_telegram.bot.access_check import access_check
 from easy_telegram.bot.arg_check import arg_check
 from easy_telegram.bot.send_action import send_action
 from easy_telegram.bot.username_check import username_check
 from easy_telegram.models.Command import Command
-from easy_telegram.util.utils import get_logger
+from easy_telegram.models.Permission import Permission
+from easy_telegram.models.User import User
+from easy_telegram.util.SessionHandler import SessionHandler
 from easy_telegram.util.State import State
 from easy_telegram.util.StoppableThread import StoppableThread
 from easy_telegram.util.utils import get_env
 
 
 class TelegramBot:
-    _logger = get_logger("TelegramBot")
+    _logger = getLogger("TelegramBot")
 
     _dispatcher: Dispatcher
     _updater: Updater
@@ -24,15 +28,37 @@ class TelegramBot:
 
     _background_thread: Optional[StoppableThread]
 
-    def __init__(self):
-        self._updater = Updater(token=get_env("TELEGRAM_TOKEN", type_=str), use_context=True)
+    @property
+    def mode(self) -> BotMode.BotMode:
+        return BotMode.MODE
+
+    @mode.setter
+    def mode(self, value: BotMode.BotMode):
+        BotMode.MODE = value
+
+    def __init__(self, token: str = None, mode: BotMode.BotMode = BotMode.BotMode.WHITELIST,
+                 admin_names: List[str] = None, whitelist_names: List[str] = None):
+        if token is None:
+            token = get_env("TELEGRAM_TOKEN", type_=str)
+
+        if admin_names is None:
+            admin_names = []
+        admin_names.extend(get_env("TELEGRAM_ADMIN", type_=str, default="").split(" "))
+        self._setup_admins(admin_names)
+
+        if whitelist_names is None:
+            whitelist_names = []
+        whitelist_names.extend(get_env("TELEGRAM_WHITELIST", type_=str, default="").split(" "))
+        self._setup_whitelist(whitelist_names)
+
+        self.mode = mode
+        self._updater = Updater(token, use_context=True)
         self._dispatcher = self._updater.dispatcher
 
-        self._unknown_msg_handler = self._unknown_msg_handler = MessageHandler(Filters.text, unknown_message)
+        self._unknown_msg_handler = MessageHandler(Filters.text, send_action(ChatAction.TYPING)(username_check(access_check()(unknown_message))))
         self._dispatcher.add_handler(self._unknown_msg_handler)
 
         self._add_commands()
-
         self._start_background_thread()
 
     def reload(self):
@@ -40,6 +66,8 @@ class TelegramBot:
         self._dispatcher.handlers.clear()
         self._dispatcher.add_handler(self._unknown_msg_handler)
         self._add_commands()
+
+        self._start_background_thread()
 
     def _add_commands(self):
         for command in State().commands:
@@ -76,3 +104,34 @@ class TelegramBot:
                                                   name="telegram_polling")
         self._background_thread.setDaemon(True)
         self._background_thread.start()
+
+    @staticmethod
+    def _setup_admins(usernames: List[str]) -> None:
+        session = SessionHandler().session
+
+        admin_perm = Permission.get_or_create(session, name="admin")
+        for name in usernames:
+            if not User.exists(name=name):
+                session.add(
+                    User(name=name, permissions=[admin_perm], whitelisted=True))  # pylint: disable=E1101
+            else:
+                user = session.query(User).filter_by(name=name).first()
+                if admin_perm not in user.permissions:
+                    user.permissions.append(admin_perm)
+
+        session.commit()
+
+    @staticmethod
+    def _setup_whitelist(usernames: List[str]) -> None:
+        session = SessionHandler().session
+
+        for name in usernames:
+            if not User.exists(name=name):
+                session.add(
+                    User(name=name, whitelisted=True))  # pylint: disable=E1101
+            else:
+                user = session.query(User).filter_by(name=name).first()
+                if not user.whitelisted:
+                    user.whitelisted = True
+
+        session.commit()
