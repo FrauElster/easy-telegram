@@ -1,8 +1,8 @@
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
-from assests.messages import get_msg, unknown_permission_msg, user_not_permitted_yet_msg, unpermission_notification, \
-    user_unpermitted_msg
+from easy_telegram.base_commands.messages import get_msg, UNKNOWN_PERMISSION_MSG, USER_NOT_PERMITTED_YET_MSG, UNPERMISSION_NOTIFICATION, \
+    USER_UNPERMITTED_MSG
 from easy_telegram.base_commands.common import get_msg_content
 from easy_telegram.models.Permission import Permission
 from easy_telegram.models.User import User
@@ -16,7 +16,7 @@ def unpermit_command(update: Update, context: CallbackContext):
     user_to_perm_name, permission_name = get_msg_content(msg.text)  # type: ignore
     if not Permission.exists(name=permission_name):
         # unknown permission
-        context.bot.send_message(chat_id, get_msg(unknown_permission_msg, {"permission": permission_name}))
+        context.bot.send_message(chat_id, get_msg(UNKNOWN_PERMISSION_MSG, {"permission": permission_name}))
         return
 
     session = SessionHandler().session
@@ -27,7 +27,7 @@ def unpermit_command(update: Update, context: CallbackContext):
 
     if perm.name not in map(lambda perm_: perm_.name, user_to_unperm.permissions):
         # user does not have permission
-        context.bot.send_message(chat_id, get_msg(user_not_permitted_yet_msg, {"user": user_to_perm_name}))
+        context.bot.send_message(chat_id, get_msg(USER_NOT_PERMITTED_YET_MSG, {"user": user_to_perm_name}))
         return
 
     user_to_unperm.permissions.remove(perm)
@@ -35,5 +35,5 @@ def unpermit_command(update: Update, context: CallbackContext):
 
     if user_to_unperm.chat_id is not None:
         context.bot.send_message(user_to_unperm.chat_id,
-                                 get_msg(unpermission_notification, {"permission": permission_name}))
-    context.bot.send_message(chat_id, get_msg(user_unpermitted_msg, {"user": user_to_perm_name}))
+                                 get_msg(UNPERMISSION_NOTIFICATION, {"permission": permission_name}))
+    context.bot.send_message(chat_id, get_msg(USER_UNPERMITTED_MSG, {"user": user_to_perm_name}))

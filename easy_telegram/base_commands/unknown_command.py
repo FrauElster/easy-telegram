@@ -3,7 +3,7 @@ from typing import Optional
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
-from assests.messages import get_msg, unknown_command_msg, command_suggestion_msg, fact_msg
+from easy_telegram.base_commands.messages import get_msg, UNKNOWN_COMMAND_MSG, COMMAND_SUGGESTION_MSG, FACT_MSG
 from easy_telegram.models.Command import Command
 from easy_telegram.models.User import User
 from easy_telegram.util.random_fact import random_fact
@@ -26,9 +26,9 @@ def unknown_command(update: Update, context: CallbackContext):
             min_distance = levenshtein(command.name, user_command)
             closest_command = command
 
-    response: str = get_msg(unknown_command_msg, {"command": f'/{user_command}'})
+    response: str = get_msg(UNKNOWN_COMMAND_MSG, {"command": f'/{user_command}'})
     if min_distance < 4:
-        response += f'\n{get_msg(command_suggestion_msg, {"command": f"/{closest_command.name}"})}'
+        response += f'\n{get_msg(COMMAND_SUGGESTION_MSG, {"command": f"/{closest_command.name}"})}'
     else:
-        response += f"\n{get_msg(fact_msg, {'fact': random_fact()})}"
+        response += f"\n{get_msg(FACT_MSG, {'fact': random_fact()})}"
     context.bot.send_message(chat_id, response)

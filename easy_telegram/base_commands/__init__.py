@@ -1,8 +1,8 @@
-from assests.messages import help_command_description, start_command_description, permit_command_description, \
-    unpermit_command_description, ban_command_description, unban_command_description, subscribe_command_description, \
-    unsubscribe_command_description, events_command_description, my_events_command_description, \
-    commands_command_description, subscribe_command_help, unsubscribe_command_help, permit_command_help, \
-    unpermit_command_help, ban_command_help, unban_command_help
+from easy_telegram.base_commands.messages import HELP_COMMAND_DESCRIPTION, START_COMMAND_DESCRIPTION, PERMIT_COMMAND_DESCRIPTION, \
+    UNPERMIT_COMMAND_DESCRIPTION, BAN_COMMAND_DESCRIPTION, UNBAN_COMMAND_DESCRIPTION, SUBSCRIBE_COMMAND_DESCRIPTION, \
+    UNSUBSCRIBE_COMMAND_DESCRIPTION, EVENTS_COMMAND_DESCRIPTION, MY_EVENTS_COMMAND_DESCRIPTION, \
+    COMMANDS_COMMAND_DESCRIPTION, SUBSCRIBE_COMMAND_HELP, UNSUBSCRIBE_COMMAND_HELP, PERMIT_COMMAND_HELP, \
+    UNPERMIT_COMMAND_HELP, BAN_COMMAND_HELP, UNBAN_COMMAND_HELP
 
 
 def setup_base_commands():
@@ -21,21 +21,21 @@ def setup_base_commands():
 
     admin_permission = Permission.get_or_create(name="admin")
 
-    Command(name="start", description=start_command_description, callback=start_command)
-    Command(name="help", description=help_command_description, callback=commands_command)
-    Command(name="sub", description=subscribe_command_description, help_usage=subscribe_command_help,
+    Command(name="start", description=START_COMMAND_DESCRIPTION, callback=start_command)
+    Command(name="help", description=HELP_COMMAND_DESCRIPTION, callback=commands_command)
+    Command(name="sub", description=SUBSCRIBE_COMMAND_DESCRIPTION, help_usage=SUBSCRIBE_COMMAND_HELP,
             callback=subscribe_command, args_number=1)
-    Command(name="unsub", description=unsubscribe_command_description,
-            help_usage=unsubscribe_command_help, callback=unsubscribe_command, args_number=1)
-    Command(name="events", description=events_command_description, callback=event_subscribe_command)
-    Command(name="my_events", description=my_events_command_description, callback=event_unsubscribe_command)
-    Command(name="commands", description=commands_command_description, callback=commands_command)
+    Command(name="unsub", description=UNSUBSCRIBE_COMMAND_DESCRIPTION,
+            help_usage=UNSUBSCRIBE_COMMAND_HELP, callback=unsubscribe_command, args_number=1)
+    Command(name="events", description=EVENTS_COMMAND_DESCRIPTION, callback=event_subscribe_command)
+    Command(name="my_events", description=MY_EVENTS_COMMAND_DESCRIPTION, callback=event_unsubscribe_command)
+    Command(name="commands", description=COMMANDS_COMMAND_DESCRIPTION, callback=commands_command)
 
-    Command(name="permit", description=permit_command_description, args_number=2,
-            help_usage=permit_command_help, callback=permit_command, permissions=[admin_permission.name])
-    Command(name="unpermit", description=unpermit_command_description, callback=unpermit_command,
-            help_usage=unpermit_command_help, permissions=[admin_permission.name], args_number=2)
-    Command(name="ban", description=ban_command_description, callback=ban_command,
-            help_usage=ban_command_help, permissions=[admin_permission.name], args_number=1)
-    Command(name="unban", description=unban_command_description, callback=unban_command,
-            help_usage=unban_command_help, permissions=[admin_permission.name], args_number=1)
+    Command(name="permit", description=PERMIT_COMMAND_DESCRIPTION, args_number=2,
+            help_usage=PERMIT_COMMAND_HELP, callback=permit_command, permissions=[admin_permission.name])
+    Command(name="unpermit", description=UNPERMIT_COMMAND_DESCRIPTION, callback=unpermit_command,
+            help_usage=UNPERMIT_COMMAND_HELP, permissions=[admin_permission.name], args_number=2)
+    Command(name="ban", description=BAN_COMMAND_DESCRIPTION, callback=ban_command,
+            help_usage=BAN_COMMAND_HELP, permissions=[admin_permission.name], args_number=1)
+    Command(name="unban", description=UNBAN_COMMAND_DESCRIPTION, callback=unban_command,
+            help_usage=UNBAN_COMMAND_HELP, permissions=[admin_permission.name], args_number=1)

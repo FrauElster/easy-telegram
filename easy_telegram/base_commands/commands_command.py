@@ -1,7 +1,7 @@
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
-from assests.messages import no_commands_msg, commands_msg
+from easy_telegram.base_commands.messages import NO_COMMANDS_MSG, COMMANDS_MSG
 from easy_telegram.models.User import User
 
 
@@ -12,9 +12,9 @@ def commands_command(update: Update, context: CallbackContext):
 
     user = User.get_or_create(name=username)
     if not user.commands:
-        context.bot.send_message(chat_id, no_commands_msg)
+        context.bot.send_message(chat_id, NO_COMMANDS_MSG)
         return
 
-    context.bot.send_message(chat_id, commands_msg)
+    context.bot.send_message(chat_id, COMMANDS_MSG)
     for command in user.commands:
         context.bot.send_message(chat_id, f"/{command.name} - {command.description}")

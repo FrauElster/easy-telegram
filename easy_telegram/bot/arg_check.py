@@ -4,7 +4,7 @@ from typing import Callable, Optional
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
-from assests.messages import get_msg, command_400  # type: ignore
+from easy_telegram.base_commands.messages import get_msg, COMMAND_400  # type: ignore
 from easy_telegram.base_commands.common import get_msg_content
 from easy_telegram.util.utils import get_logger
 
@@ -26,7 +26,7 @@ class arg_check:
 
             if len(get_msg_content(msg.text)) != self._arg_amount:  # type: ignore
                 # command needs more / fewer args
-                context.bot.send_message(msg.chat_id, get_msg(command_400))
+                context.bot.send_message(msg.chat_id, get_msg(COMMAND_400))
                 if self._help_text:
                     context.bot.send_message(msg.chat_id, self._help_text)
                 return

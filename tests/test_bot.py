@@ -1,6 +1,6 @@
 import pytest
 
-from assests.messages import no_username_msg, not_permitted_msg
+from easy_telegram.base_commands.messages import NO_USERNAME_MSG, NOT_PERMITTED_MESSAGE
 from easy_telegram.bot.bot import TelegramBot
 from tests.Mock import MockUser, MockMessage, MockUpdate, BotSend
 from tests.common import receive_msg
@@ -16,7 +16,7 @@ class TestBot:
         with pytest.raises(BotSend) as e_info:
             receive_msg(bot, update)
         bots_message = str(e_info.value)
-        assert bots_message == no_username_msg
+        assert bots_message == NO_USERNAME_MSG
 
     def test_no_whitelist(self):
         bot = TelegramBot()
@@ -28,4 +28,4 @@ class TestBot:
             receive_msg(bot, update)
 
         bots_message = str(e_info.value)
-        assert bots_message == not_permitted_msg
+        assert bots_message == NOT_PERMITTED_MESSAGE

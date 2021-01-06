@@ -4,7 +4,7 @@ from typing import Callable, Set, List
 from telegram import Update, Message
 from telegram.ext import CallbackContext
 
-from assests.messages import ban_msg, not_permitted_msg
+from easy_telegram.base_commands.messages import BAN_MSG, NOT_PERMITTED_MESSAGE
 from easy_telegram.bot.BotMode import get_mode, BotMode
 from easy_telegram.models.User import User
 from easy_telegram.util.utils import get_logger
@@ -32,14 +32,14 @@ class access_check:
             if user.blocked:
                 # user is blocked
                 self._logger.info("Blocked user %s tried to send msg: '%s'", user.name, msg.text)
-                context.bot.send_message(chat_id=msg.chat_id, text=ban_msg)
+                context.bot.send_message(chat_id=msg.chat_id, text=BAN_MSG)
                 return
 
             if get_mode() == BotMode.WHITELIST and not user.whitelisted:
                 # user is not whitelisted
                 self._logger.info("Non whitelisted user %s tried to send msg: '%s'", user.name, msg.text)
                 context.bot.send_message(chat_id=msg.chat_id,
-                                         text=not_permitted_msg)
+                                         text=NOT_PERMITTED_MESSAGE)
                 return
 
             if not self._permissions:
@@ -54,7 +54,7 @@ class access_check:
             self._logger.info("user %s has none of the required permissions ('%s') to send msg: '%s'", user.name,
                               ", ".join(self._permissions), msg.text)
             context.bot.send_message(chat_id=msg.chat_id,
-                                     text=not_permitted_msg)
+                                     text=NOT_PERMITTED_MESSAGE)
             return
 
         return wrapper
